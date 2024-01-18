@@ -1,0 +1,27 @@
+name: "Workflow : Push"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: '${{ secrets.DOCKERHUB_USERNAME }}'
+          password: '${{ secrets.DOCKERHUB_TOKEN }}'
+
+      - name: get short SHA
+        id: var
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        run: docker build --push -t ${{ secrets.DOCKERHUB_USERNAME }}/sales-order-parser:latest -t ${{ secrets.DOCKERHUB_USERNAME }}/sales-order-parser:${{ steps.var.outputs.sha_short }} .

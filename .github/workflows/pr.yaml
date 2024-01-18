@@ -1,0 +1,14 @@
+name: "Workflow : Pull Request"
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  pr-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python -m unittest discover -s tests -p "*_test.py"
